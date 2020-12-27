@@ -28,7 +28,7 @@ plt.show()
 asd = pd.read_csv("/home/mohd/Downloads/popularity.csv")
 asd.columns = asd.columns.str.replace(' ', '')
 asd["shares"].median()
-asd.descibe() ####
+asd.descibe(include="all") ####
 asd.info() ####
 asd.info() ####
 asd["shares"].quantile([0.78,0.7,0.8])
@@ -105,6 +105,7 @@ grouped = asd["date"].groupby(["date"])
 help(plt.set_style)
 
 ## Investment assignment
+# https://colab.research.google.com/drive/1kDE8yRm_0mTtL__eIHPMYGsy0VfW2056?usp=sharing
 
 import chardet ## to check encoding with confidence
 with open("/home/mohd/Downloads/ms/companies.csv",'rb') as rawdata:
@@ -159,7 +160,7 @@ groupedG2.describe()
 
 # also visible
 fig, ax = plt.subplots()
-asd=groupedG2.boxplot(column=['raised_amount_usd'], by='funding_round_type', ax=ax)
+asd=groupedG.boxplot(column=['raised_amount_usd'], by='funding_round_type', ax=ax)
 # for name, group in grouped:
 #     ax.plot(group.raised_amount_usd, marker='o', linestyle='', ms=2, label=name)
 # plt.ylim(0, 10000000)
@@ -188,6 +189,9 @@ mapping = pd.read_csv("/home/mohd/Downloads/ms/mapping.csv")
 
 #https://stackoverflow.com/questions/57861364/melt-multiple-boolean-columns-in-a-single-column-in-pandas  VS https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html
 # r- melt, dcast, reshape2
+?pd.melt   
+###
+# pivot is reverse of melt
 #########
 mapping["category"] = mapping.dropna().iloc[:,1:10].idxmax(1)
 ## use right join insead of replace
@@ -201,7 +205,7 @@ master_frame.rename(columns={'category_x': 'primary_sector', 'category_y': 'main
 
 
 d13 = master_frame[["country_code","funding_round_type","raised_amount_usd","main_sector"]] [ 
-(master_frame["country_code"].isin(["USA","GBR","CAN"])) & 
+(master_frame["country_code"].isin(["USA","GBR","IND"])) & 
 (master_frame["funding_round_type"]=="venture") &
 (master_frame["raised_amount_usd"] >= 5000000 ) &
 (master_frame["raised_amount_usd"] <= 15000000 ) 
@@ -214,7 +218,7 @@ stats = grouped.agg(["sum","count"])["raised_amount_usd"]
 
 stats.loc["USA",:].sum()  
 stats.loc["GBR",:].sum()
-stats.loc["CAN",:].sum()
+stats.loc["IND",:].sum()
 
 stats.sort_values(["country_code","count"],ascending=False)
 
@@ -239,17 +243,17 @@ master_frame [
 # DF made of series not lists, hence uniform type in a series/column
 #series
 # df.loc[(index tuple), opt column list] ############# general
-stats.loc["CAN","sum"]
+stats.loc["IND","sum"]
 #df
-stats.loc["CAN",["sum","count"]]
-stats.loc[["CAN"],"sum"]
+stats.loc["IND",["sum","count"]]
+stats.loc[["IND"],"sum"]
 
-stats.loc[("CAN","Others"),"sum"]
+stats.loc[("IND","Others"),"sum"]
 
 ## by index, same
-stats.loc[("CAN","Others")]   ##  for multiple; stats.loc[[("CAN","Others"),("USA","Others")]] OR df.query
-stats.loc["CAN","Others"]  #-- only tuple, not list, default in python - "," separated is tuple
-#stats.loc[["CAN","Others"]] ---- wrong
+stats.loc[("IND","Others")]   ##  for multiple; stats.loc[[("IND","Others"),("USA","Others")]] OR df.query
+stats.loc["IND","Others"]  #-- only tuple, not list, default in python - "," separated is tuple
+#stats.loc[["IND","Others"]] ---- wrong
 
 #same
 stats.loc[stats["sum"]>420000000]
@@ -271,13 +275,14 @@ data.loc[(data.Year < 2015), ['Mileage']] = 22
 df.reset_index(inplace=True,drop=True) ### for continues index, eg after dropping
 
 
-
 #### compacting continuous "Size" series to bins
 inp1["Size_Bucket"] = pd.qcut(inp1.Size, [0,0.2,0.4,0.6,0.8,1.0],["VL","L","M","H","VH"])
 
 
 
 ### Plotting
+######### https://colab.research.google.com/drive/1kDE8yRm_0mTtL__eIHPMYGsy0VfW2056#scrollTo=oFt1RBuyu_Xo
+
 sns.set_style("dark")
 #OR
 plt.style.use("ggplot") #####
