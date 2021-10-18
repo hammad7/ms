@@ -163,10 +163,12 @@ class DQNAgent:
                 update_output[i] = env.state_encod_arch2(next_state)
                 dones.append(done)
             
-            # 1. Predict the target from earlier model
+            # 1. Predict the target from earlier model, Optimization preventing calls to multiple predicts
+            # target = self.model.predict(update_input, max_queue_size=100, workers=2, use_multiprocessing=True)
+            # target_qval = self.model.predict(update_output, max_queue_size=100, workers=2, use_multiprocessing=True)
             target = self.model.predict(np.vstack([update_input,update_output]))
-            target_qval = target[0:int(len(target)/2)]
-            target = target[int(len(target)/2):int(len(target))]
+            target_qval = target[int(len(target)/2):int(len(target))]
+            target = target[0:int(len(target)/2)]
             # 2. Get the target for the Q-network
             
             
@@ -186,9 +188,11 @@ class DQNAgent:
         
     def save_tracking_states(self):
         # Use the model to predict the q_value of the state we are tacking.
+        # q_value_1 = self.model.predict(self.track_state_1)
+        # q_value_2 = self.model.predict(self.track_state_2)
         q_value_1 = self.model.predict(np.vstack([self.track_state_1,self.track_state_2]))
-        q_value_2 = q_value_1[0:int(len(q_value_1)/2)]
-        q_value_1 = q_value_1[int(len(q_value_1)/2):int(len(q_value_1))]
+        q_value_2 = q_value_1[int(len(q_value_1)/2):int(len(q_value_1))]
+        q_value_1 = q_value_1[0:int(len(q_value_1)/2)]
 
         
         # Grab the q_value of the action index that we are tracking.
@@ -226,7 +230,6 @@ for episode in tqdm(range(Episodes)):
 
     terminal_state = False
     score = 0
-    track_reward = False
 
     # Reset at the start of each episode
     state = env.reset()
